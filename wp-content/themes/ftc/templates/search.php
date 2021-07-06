@@ -37,15 +37,22 @@ if (in_array($style, ['dropdown', 'justify'])) {
 }
 
 // Toggle
-if ($style == 'modal' && in_array($position, ['header', 'header-split'])) {
-    $toggle['class'][] = 'uk-search-toggle';
+if ($style == 'modal') {
+
+    if (($position == 'navbar' && preg_match('/^(horizontal|stacked)/', $layout)) ||
+        (in_array($position, ['header', 'header-split']) && preg_match('/^(offcanvas|modal|horizontal)/', $layout))) {
+        $toggle['class'][] = 'uk-navbar-toggle';
+    } else {
+        $toggle['class'][] = 'uk-search-toggle';
+    }
+
 }
 
 ?>
 
 <?php if ($style == 'modal') : ?>
 
-    <a<?= $this->attrs($toggle) ?> href="#<?= $id = $attrs['id'].'-modal' ?>" uk-search-icon uk-toggle></a>
+    <a<?= $this->attrs($toggle) ?> href="#<?= $id = $attrs['id'] . '-modal' ?>" uk-search-icon uk-toggle></a>
 
     <div id="<?= $id ?>" class="uk-modal-full" uk-modal>
         <div class="uk-modal-dialog uk-flex uk-flex-center uk-flex-middle" uk-height-viewport>

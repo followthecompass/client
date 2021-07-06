@@ -10,8 +10,8 @@ $outside_transparent = $config('~site.toolbar_transparent') && $config('~site.bo
 $attrs_toolbar = [];
 $attrs_toolbar['class'][] = 'tm-toolbar';
 $attrs_toolbar['class'][] = $outside && $outside_transparent ? "uk-{$config('~site.boxed.header_transparent')}" : 'tm-toolbar-default';
-$attrs_toolbar['class'][] = !$outside && $config('~site.toolbar_transparent') ? 'tm-toolbar-transparent' : '';
-$attrs_toolbar['class'][] = 'uk-visible@'.$config('~mobile.breakpoint');
+$attrs_toolbar['class'][] = !$outside && $config('~site.toolbar_transparent') ? 'js-toolbar-transparent' : '';
+$attrs_toolbar['class'][] = 'uk-visible@' . $config('~mobile.breakpoint');
 
 // Width Container
 $attrs_width_container = [];

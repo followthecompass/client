@@ -15,8 +15,8 @@
         <div>
 
             <ul class="uk-pagination">
-                <?php for ( $i = 1; $i <= $numpages; $i++ ) : ?>
-                    <?php if ($i != $page || ! $more && 1 == $page) : ?>
+                <?php for ($i = 1; $i <= $numpages; $i++) : ?>
+                    <?php if ($i != $page || !$more && 1 == $page) : ?>
                         <li><?= _wp_link_page($i) . $i ?></a></li>
                     <?php else : ?>
                         <li class="uk-active"><span><?= $i ?></span></li>

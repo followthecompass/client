@@ -34,7 +34,7 @@ if ($position == 'navbar') {
         $alignment = 'uk-margin-auto-left';
     }
 
-    if ($module->type == 'menu' && preg_match('/^(horizontal|stacked)/', $layout)) {
+    if ($module->type == 'menu' && preg_match('/^(horizontal|stacked)/', $layout) && in_array($config('~module.menu_style'), ['', 'nav'])) {
 
         if ($alignment) {
             echo "<div class=\"{$alignment}\">{$module->content}</div>";
@@ -60,23 +60,29 @@ if ($position == 'navbar') {
             $class[] = $alignment;
         }
 
-        if ($module->type == 'search' && $config('~header.search_style') == 'modal' && preg_match('/^(horizontal|stacked)/', $layout)) {
-            $class[] = 'uk-navbar-toggle';
+        if (in_array($module->type, ['search', 'finder']) && $config('~header.search_style') == 'modal' && preg_match('/^(horizontal|stacked)/', $layout)) {
+            // Rendered differently
         } else {
             $class[] = 'uk-navbar-item';
         }
 
     }
 
+// Render header in navbar
 } elseif ($position == 'header' && preg_match('/^(offcanvas|modal|horizontal)/', $layout)) {
 
-    if ($module->type == 'menu') {
+    if ($module->type == 'menu' && in_array($config('~module.menu_style'), ['', 'nav'])) {
         echo $module->content;
         return;
     }
 
-    $class[] = 'uk-navbar-item';
+    if (in_array($module->type, ['search', 'finder']) && $config('~header.search_style') == 'modal') {
+        // Rendered differently
+    } else {
+        $class[] = 'uk-navbar-item';
+    }
 
+// Render logo in navbar
 } elseif (($position == 'logo' && preg_match('/^(offcanvas|modal|horizontal|stacked-center-split)/', $layout)) || $position == 'logo-mobile') {
 
     $class[] = 'uk-navbar-item';
@@ -85,6 +91,7 @@ if ($position == 'navbar') {
 
     $class[] = 'uk-panel';
 
+// Sidebar, Top, Bottom, Builder 1-6
 } else {
 
     $class[] = $config('~module.style') ? "uk-card uk-card-body uk-{$config('~module.style')}" : 'uk-panel';
@@ -105,7 +112,7 @@ if ($visibility = $config('~module.visibility')) {
 if (!preg_match('/^(toolbar-(left|right)|navbar|header(-split)?|logo(-mobile)?|debug)$/', $position)) {
 
     // Title?
-    if ($config('~module.showtitle')) {
+    if ($config('~module.showtitle') && !empty($module->title)) {
 
         $title['class'] = [];
         $title_element = $config('~module.title_tag', 'h3');
@@ -132,21 +139,22 @@ if (!preg_match('/^(toolbar-(left|right)|navbar|header(-split)?|logo(-mobile)?|d
         $class[] = "uk-text-{$config('~module.text_align')}";
     }
 
-    // List
-    if ($config('~module.is_list')) {
-        $class[] = 'tm-child-list';
+}
 
-        // List Style?
-        if ($config('~module.list_style')) {
-            $class[] = "tm-child-list-{$config('~module.list_style')}";
-        }
+// List options
+$list_class = [];
+if ($config('~module.is_list')) {
+    $list_class[] = 'tm-child-list';
 
-        // Link Style?
-        if ($config('~module.link_style')) {
-            $class[] = "uk-link-{$config('~module.link_style')}";
-        }
+    // List Style?
+    if ($config('~module.list_style')) {
+        $list_class[] = "tm-child-list-{$config('~module.list_style')}";
     }
 
+    // Link Style?
+    if ($config('~module.link_style')) {
+        $list_class[] = "uk-link-{$config('~module.link_style')}";
+    }
 }
 
 // Grid positions
@@ -165,20 +173,26 @@ if (preg_match('/^(top|bottom|builder-\d+)$/', $position)) {
 
 }
 
+if (empty($module->title) && empty($module->content)) {
+    return;
+}
+
 ?>
 
-<div<?= $this->attrs(compact('class'), $module->attrs) ?>>
+<div<?= $this->attrs(compact('class'), ['class' => $list_class], $module->attrs) ?>>
 
     <?php if ($title) : ?>
-    <<?= $title_element ?><?= $this->attrs($title) ?>>
+
+        <<?= $title_element ?><?= $this->attrs($title) ?>>
 
         <?php if ($config('~module.title_decoration') == 'line') : ?>
-            <span><?= $module->title ?></span>
+        <span><?= $module->title ?></span>
         <?php else: ?>
-            <?= $module->title ?>
+        <?= $module->title ?>
         <?php endif ?>
 
-    </<?= $title_element ?>>
+        </<?= $title_element ?>>
+
     <?php endif ?>
 
     <?= $module->content ?>

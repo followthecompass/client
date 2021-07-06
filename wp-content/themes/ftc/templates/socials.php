@@ -23,10 +23,10 @@ $links = array_filter(array_slice((array) $config('~theme.social_links'), 0, 5))
             $attrs['target'] = $config('~header.social_target') && (preg_match('/(tel:|mailto:)/', $link) == 0) ? '_blank' : false;
 
             $attrs_icon = [
-                'uk-icon' => json_encode(array_filter([
-                    'icon' => $this->e($link, 'social'),
-                    'width' => $config('~header.social_width'),
-                ])),
+                'uk-icon' => [
+                    'icon: {0};' => $this->e($link, 'social'),
+                    'width: {0};' => $config('~header.social_width'),
+                ],
             ];
 
             ?>
