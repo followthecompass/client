@@ -57,7 +57,7 @@ $image = function ($attr) use ($config, $view) {
 
     $image = app(ImageProvider::class);
     $meta = get_post_meta(get_post_thumbnail_id());
-    $src = Path::relative(Url::base(), set_url_scheme($src, 'relative'));
+    $src = Url::relative(set_url_scheme($src, 'relative'));
     $alt = isset($meta['_wp_attachment_image_alt']) ? $meta['_wp_attachment_image_alt'] : '';
 
     if ($view->isImage($src) == 'svg') {

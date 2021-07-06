@@ -8,7 +8,7 @@ $config->addAlias('~mobile', '~theme.mobile');
 $logo = $config('~logo.image_mobile') || $config('~logo.image') || $config('~logo.text') || is_active_sidebar('logo-mobile');
 $attrs_menu = [];
 $attrs_sticky = [];
-$attrs_navbar = ['uk-navbar' => true];
+$attrs_navbar = ['uk-navbar' => 'container: .tm-header-mobile'];
 $attrs_navbar_container = ['class' => 'uk-navbar-container'];
 
 // Sticky
@@ -150,8 +150,6 @@ if (is_active_sidebar('mobile')) {
 <div id="tm-mobile" uk-offcanvas<?= $this->attrs($config('~mobile.offcanvas') ?: []) ?>>
     <div<?= $this->attrs($attrs_menu) ?>>
 
-        <button class="uk-offcanvas-close" type="button" uk-close></button>
-
         <?php if ($config('~mobile.menu_center_vertical')) : ?>
         <div class="uk-margin-auto-vertical uk-width-1-1">
             <?php endif ?>
@@ -169,8 +167,6 @@ if (is_active_sidebar('mobile')) {
 <?php if ($config('~mobile.animation') == 'modal') : ?>
 <div id="tm-mobile" class="uk-modal-full" uk-modal>
     <div<?= $this->attrs($attrs_menu, ['class' => 'uk-height-viewport']) ?>>
-
-        <button class="uk-modal-close-full" type="button" uk-close></button>
 
         <?php if ($config('~mobile.menu_center_vertical')) : ?>
         <div class="uk-margin-auto-vertical uk-width-1-1">
