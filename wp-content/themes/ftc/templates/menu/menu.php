@@ -8,15 +8,48 @@ $config->addAlias('~navbar', '~theme.navbar');
 // Menu ID
 $attrs['id'] = $config('~menu.tag_id');
 
-// determine layout, strpos() on $config('~menu.position') to also find the virtual position 'navbar-split'
-if (strpos($config('~menu.position'), 'navbar') === 0) {
+$hasHeaderParent = function ($items) {
+    return array_filter($items, function ($item) {
+        return $item->type == 'header' && !empty($item->children) && isset($item->url) && ($item->url === '#' || $item->url === '');
+    });
+};
+
+// Menu type
+
+// Temporary force menu_style to default if set to 'nav' on 'head' positions
+if ($config('~menu.menu_style') == 'nav' && in_array($config('~menu.position'), ['header', 'navbar', 'navbar-split', 'toolbar-left', 'toolbar-right', 'logo', 'logo-mobile'])) {
+    $config->set('~menu.menu_style', '');
+}
+
+if ($config('~menu.menu_style') == 'iconnav') {
+
+    $type = 'iconnav';
+    $attrs['class'][] = 'uk-iconnav';
+
+} elseif ($config('~menu.menu_style') == 'subnav') {
+
+    $type = 'subnav';
+    $attrs['class'][] = 'uk-subnav';
+    $attrs['class']['uk-subnav-divider'] = $config('~menu.menu_divider');
+
+} elseif ($config('~menu.menu_style') == 'nav') {
+
+    $type = 'nav';
+    $attrs['class'][] = 'uk-nav uk-nav-default';
+    $attrs['class']['uk-nav-divider'] = $config('~menu.menu_divider');
+
+// Default on Navbar
+} elseif (in_array($config('~menu.position'), ['navbar', 'navbar-split'])) {
 
     $layout = $config('~header.layout');
 
     if (preg_match('/^(offcanvas|modal)/', $layout)) {
 
         $type = 'nav';
-        $attrs['class'][] = "uk-nav uk-nav-{$config('~navbar.toggle_menu_style')}";
+        $attrs['class'][] = 'uk-nav';
+        // Layout Header Settings
+        $attrs['class'][] = "uk-nav-{$config('~navbar.toggle_menu_style')}";
+        $attrs['class'][] = $config('~navbar.toggle_menu_divider') ? 'uk-nav-divider' : '';
         $attrs['class'][] = $config('~navbar.toggle_menu_center') ? 'uk-nav-center' : '';
 
     } else {
@@ -37,7 +70,8 @@ if (strpos($config('~menu.position'), 'navbar') === 0) {
         }
     }
 
-} else if ($config('~menu.position') == 'header') {
+// Default on Header
+} elseif (in_array($config('~menu.position'), ['header', 'header-split'])) {
 
     $layout = $config('~header.layout');
 
@@ -46,6 +80,7 @@ if (strpos($config('~menu.position'), 'navbar') === 0) {
         $type = 'subnav';
         $attrs['class'][] = 'uk-subnav';
 
+    // Render in navbar
     } else {
 
         $type = 'navbar';
@@ -53,36 +88,38 @@ if (strpos($config('~menu.position'), 'navbar') === 0) {
 
     }
 
-} else if ($config('~menu.menu_style') == 'subnav' || in_array($config('~menu.position'), ['toolbar-left', 'toolbar-right', 'logo', 'logo-mobile'])) {
+// Default on Toolbar and Logo
+} elseif (in_array($config('~menu.position'), ['toolbar-left', 'toolbar-right', 'logo', 'logo-mobile'])) {
 
     $type = 'subnav';
     $attrs['class'][] = 'uk-subnav';
 
-} else {
+// Default on Mobile
+} elseif ($config('~menu.position') == 'mobile') {
 
     $type = 'nav';
     $attrs['class'][] = 'uk-nav';
+    // Layout Mobile Settings
+    $attrs['class'][] = "uk-nav-{$config('~mobile.menu_style')}";
+    $attrs['class'][] = $config('~mobile.menu_divider') ? 'uk-nav-divider' : '';
+    $attrs['class'][] = $config('~mobile.menu_center') ? 'uk-nav-center' : '';
 
-    if ($config('~menu.position') == 'mobile') {
+// Default on Sidebar, Top, Bottom, Builder 1-6
+} else {
 
-        $attrs['class'][] = "uk-nav-{$config('~mobile.menu_style')}";
-        $attrs['class'][] = $config('~mobile.menu_center') ? 'uk-nav-center' : '';
+    $type = 'nav';
+    $attrs['class'][] = 'uk-nav uk-nav-default';
 
-    } else {
+}
 
-        $attrs['class'][] = 'uk-nav-default';
+// Accordion menu
 
-    }
+if ($type == 'nav' && $hasHeaderParent($items)) {
 
-    if (!in_array($config('~menu.position'), ['header', 'navbar', 'toolbar-left', 'toolbar-right'])
-        && array_filter($items, function ($item) { return $item->type == 'header' && !empty($item->children) && isset($item->url) && ($item->url === '#' || $item->url === ''); })
-    ) {
+    $config->set('~menu.accordion', true);
+    $attrs['class'][] = 'uk-nav-parent-icon uk-nav-accordion';
+    $attrs['uk-nav'] = 'targets: > .js-accordion';
 
-        $config->set('~menu.accordion', true);
-        $attrs['class'][] = 'uk-nav-parent-icon uk-nav-accordion';
-        $attrs['uk-nav'] = '{"targets": "> .js-accordion"}';
-
-    }
 }
 
 ?>

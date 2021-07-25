@@ -2,36 +2,53 @@
 
 foreach ($items as $item) {
 
-    $attrs = ['class' => []];
-    $children = isset($item->children);
-    $indention = str_pad("\n", $level + 1, "\t");
-    $title = $item->title;
-
     // Config
     $config->addAlias('~menuitem', "~theme.menu.items.{$item->id}");
 
-    // Active?
+    // Children
+
+    $children = isset($item->children);
+    $indention = str_pad("\n", $level + 1, "\t");
+
+    // List item
+
+    $attrs = ['class' => []];
+
     if ($item->active) {
         $attrs['class'][] = 'uk-active';
     }
 
-    // Icon
-    $icon = $config('~menuitem.icon');
-    if ($view->isImage($icon)) {
-        $icon = "<img src=\"{$icon}\" alt=\"{$item->title}\">";
-    } elseif ($icon) {
-        $icon = "<span class=\"uk-margin-small-right\" uk-icon=\"icon: {$icon}\"></span>";
+    // Title
+
+    $title = $item->title;
+
+    // Image
+
+    $image = $config('~menuitem.image');
+    $image_attrs['class'] = [
+        $config('~menuitem.image-classes', ''),
+    ];
+
+    if ($view->isImage($image)) {
+        $image = $view->image($image, $image_attrs + ['alt' => $item->title, 'uk-svg' => $view->isImage($image) == 'svg']);
+    } elseif ($image) {
+        $image = "<span {$this->attrs($image_attrs)} uk-icon=\"{$image}\"></span>";
     }
 
-    // Show Icon only
-    if ($icon && $config('~menuitem.icon-only')) {
+    if ($image && $config('~menuitem.image-only')) {
         $title = '';
+    }
+
+    // Title Suffix, e.g. cart quantity
+
+    if ($suffix = $config('~menuitem.title-suffix')) {
+        $title .= " {$config('~menuitem.title-suffix')}";
     }
 
     // Header
     if ($item->type == 'header' || ($item->type === 'custom' && $item->url === '#')) {
 
-        $title = $icon . $title;
+        $title = "{$image} {$title}";
 
         // Divider
         if ($item->divider && !$children) {
@@ -67,15 +84,13 @@ foreach ($items as $item) {
             $link['rel'] = $item->anchor_rel;
         }
 
-        // Additional Class
         if (isset($item->class)) {
             $link['class'] = $item->class;
         }
 
-        $title = "<a{$this->attrs($link)}>{$icon}{$title}</a>";
+        $title = "<a{$this->attrs($link)}>{$image} {$title}</a>";
     }
 
-    // Children?
     if ($children) {
 
         $attrs['class'][] = 'uk-parent';

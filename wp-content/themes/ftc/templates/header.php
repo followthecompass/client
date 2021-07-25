@@ -28,8 +28,9 @@ if (!preg_match('/^(offcanvas|modal)/', $layout)) {
         ],
         'uk-navbar' => json_encode(array_filter([
             'align' => $config('~navbar.dropdown_align'),
-            'boundary' => '!.uk-navbar-container',
+            'boundary' => '.tm-header .uk-navbar-container',
             'boundary-align' => $config('~navbar.dropdown_boundary'),
+            'container' => '.tm-header',
             'dropbar' => $config('~navbar.dropbar') ? true : null,
             'dropbar-anchor' => $config('~navbar.dropbar') ? '!.uk-navbar-container' : null,
             'dropbar-mode' => $config('~navbar.dropbar'),
@@ -42,7 +43,7 @@ if (!preg_match('/^(offcanvas|modal)/', $layout)) {
         'class' => [
             'uk-navbar',
         ],
-        'uk-navbar' => true,
+        'uk-navbar' => ['container' => '.tm-header'],
     ];
 
 }
@@ -66,7 +67,9 @@ $outside = $config('~site.layout') == 'boxed' && $config('~site.boxed.header_out
 
 if ($outside && $config('~site.boxed.header_transparent')) {
 
-    $class[] = 'tm-header-transparent';
+    $attrs_headerbar = [
+        'class' => ["uk-{$config('~site.boxed.header_transparent')}"],
+    ];
 
     if ($sticky) {
         $attrs_sticky['cls-inactive'] = "uk-navbar-transparent uk-{$config('~site.boxed.header_transparent')}";
@@ -77,6 +80,12 @@ if ($outside && $config('~site.boxed.header_transparent')) {
     } else {
         $attrs_navbar_container['class'][] = "uk-navbar-transparent uk-{$config('~site.boxed.header_transparent')}";
     }
+
+} else {
+
+    $attrs_headerbar = [
+        'class' => ['tm-headerbar-default'],
+    ];
 
 }
 
@@ -108,9 +117,7 @@ if ($outside) {
 
 <?php
 
-/*
- * Horizontal layouts
- */
+// Horizontal layouts
 
 if (in_array($layout, ['horizontal-left', 'horizontal-center', 'horizontal-right', 'horizontal-center-logo'])) :
 
@@ -186,14 +193,12 @@ if (in_array($layout, ['horizontal-left', 'horizontal-center', 'horizontal-right
 
 <?php
 
-/*
- * Stacked Center layouts
- */
+// Stacked Center layouts
 
 if (in_array($layout, ['stacked-center-a', 'stacked-center-b', 'stacked-center-split'])) : ?>
 
     <?php if ($logo && $layout != 'stacked-center-split' || $layout == 'stacked-center-a' && is_active_sidebar('header')) : ?>
-    <div class="tm-headerbar-top<?= $outside && $config('~site.boxed.header_transparent') ? " uk-{$config('~site.boxed.header_transparent')}" : '' ?>">
+    <div<?= $this->attrs($attrs_headerbar, ['class' => 'tm-headerbar tm-headerbar-top']) ?>>
         <div<?= $this->attrs($attrs_width_container) ?>>
 
             <?php if ($logo) : ?>
@@ -261,7 +266,7 @@ if (in_array($layout, ['stacked-center-a', 'stacked-center-b', 'stacked-center-s
     <?php endif ?>
 
     <?php if (in_array($layout, ['stacked-center-b', 'stacked-center-split']) && is_active_sidebar('header')) : ?>
-    <div class="tm-headerbar-bottom<?= $outside && $config('~site.boxed.header_transparent') ? " uk-{$config('~site.boxed.header_transparent')}" : '' ?>">
+    <div<?= $this->attrs($attrs_headerbar, ['class' => 'tm-headerbar tm-headerbar-bottom']) ?>>
         <div<?= $this->attrs($attrs_width_container) ?>>
             <div class="uk-grid-medium uk-child-width-auto uk-flex-center uk-flex-middle" uk-grid>
                 <?php dynamic_sidebar("header:cell") ?>
@@ -274,19 +279,17 @@ if (in_array($layout, ['stacked-center-a', 'stacked-center-b', 'stacked-center-s
 
 <?php
 
-/*
- * Stacked Center C layout
- */
+// Stacked Center C layout
 
 if ($layout == 'stacked-center-c') : ?>
 
     <?php if ($logo || is_active_sidebar('header')) : ?>
-    <div class="tm-headerbar-top<?= $outside && $config('~site.boxed.header_transparent') ? " uk-{$config('~site.boxed.header_transparent')}" : '' ?>">
+    <div<?= $this->attrs($attrs_headerbar, ['class' => 'tm-headerbar tm-headerbar-top']) ?>>
         <div<?= $this->attrs($attrs_width_container) ?>>
             <div class="uk-position-relative uk-flex uk-flex-center uk-flex-middle">
 
                 <?php if (is_active_sidebar('header')) : ?>
-                <div class="uk-position-center-left">
+                <div class="uk-position-center-left tm-position-z-index-high">
                     <div class="uk-grid-medium uk-child-width-auto uk-flex-middle" uk-grid>
                         <?php dynamic_sidebar("header:cell") ?>
                     </div>
@@ -299,7 +302,7 @@ if ($layout == 'stacked-center-c') : ?>
                 <?php endif ?>
 
                 <?php if (is_active_sidebar('header-split')) : ?>
-                <div class="uk-position-center-right">
+                <div class="uk-position-center-right tm-position-z-index-high">
                     <div class="uk-grid-medium uk-child-width-auto uk-flex-middle" uk-grid>
                         <?php dynamic_sidebar("header-split:cell") ?>
                     </div>
@@ -341,9 +344,7 @@ if ($layout == 'stacked-center-c') : ?>
 
 <?php
 
-/*
- * Stacked Left layouts
- */
+// Stacked Left layouts
 
 if ($layout == 'stacked-left-a' || $layout == 'stacked-left-b') :
 
@@ -353,7 +354,7 @@ if ($layout == 'stacked-left-a' || $layout == 'stacked-left-b') :
     ?>
 
     <?php if ($logo || is_active_sidebar('header')) : ?>
-    <div class="tm-headerbar-top<?= $outside && $config('~site.boxed.header_transparent') ? " uk-{$config('~site.boxed.header_transparent')}" : '' ?>">
+    <div<?= $this->attrs($attrs_headerbar, ['class' => 'tm-headerbar tm-headerbar-top']) ?>>
         <div<?= $this->attrs($attrs_width_container) ?>>
 
             <?= $logo ? $view('~theme/templates/header-logo') : '' ?>
@@ -411,9 +412,7 @@ if ($layout == 'stacked-left-a' || $layout == 'stacked-left-b') :
 
 <?php
 
-/*
- * Toggle layouts
- */
+// Toggle layouts
 
 if (preg_match('/^(offcanvas|modal)/', $layout)) :
 
@@ -458,7 +457,7 @@ if (preg_match('/^(offcanvas|modal)/', $layout)) :
                             </a>
 
                             <?php if (strpos($layout, 'offcanvas') === 0) : ?>
-                            <div id="tm-navbar" uk-offcanvas="flip: true"<?= $this->attrs($config('~navbar.offcanvas') ?: []) ?>>
+                            <div id="tm-navbar" uk-offcanvas="flip: true; container: true"<?= $this->attrs($config('~navbar.offcanvas') ?: []) ?>>
                                 <div<?= $this->attrs($attrs_toggle) ?>>
 
                                     <button class="uk-offcanvas-close uk-close-large" type="button" uk-close></button>

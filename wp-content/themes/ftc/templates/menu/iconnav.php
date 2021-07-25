@@ -23,7 +23,7 @@ foreach ($items as $item) {
 
     // Title
 
-    $title = $item->title;
+    $title = ''; // Don't set for iconnav
 
     // Image
 
@@ -38,20 +38,10 @@ foreach ($items as $item) {
         $image = "<span {$this->attrs($image_attrs)} uk-icon=\"{$image}\"></span>";
     }
 
-    if ($image && $config('~menuitem.image-only')) {
-        $title = '';
-    }
-
     // Title Suffix, e.g. cart quantity
 
     if ($suffix = $config('~menuitem.title-suffix')) {
         $title .= " {$config('~menuitem.title-suffix')}";
-    }
-
-    // Subtitle
-
-    if ($subtitle = $config('~menuitem.subtitle')) {
-        $subtitle = "<div>{$subtitle}</div>";
     }
 
     // Link
@@ -78,5 +68,5 @@ foreach ($items as $item) {
         $link['class'] = $item->class;
     }
 
-    echo "<li{$this->attrs($attrs)}><a{$this->attrs($link)}>{$image} {$title}{$subtitle}</a></li>";
+    echo "<li{$this->attrs($attrs)}><a{$this->attrs($link)}>{$image} {$title}</a></li>";
 }
