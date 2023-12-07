@@ -37,7 +37,7 @@ $atts = shortcode_atts(
     'gallery'
 );
 
-$atts['columns'] = $atts['columns'] > 6 ? 6 : $atts['columns'];
+$atts['columns'] = min($atts['columns'], 6);
 $id = intval($atts['id']);
 
 if (!empty($atts['include'])) {
@@ -53,8 +53,8 @@ if (!empty($atts['include'])) {
     );
 
     $attachments = [];
-    foreach ($_attachments as $key => $val) {
-        $attachments[$val->ID] = $_attachments[$key];
+    foreach ($_attachments as $val) {
+        $attachments[$val->ID] = $val;
     }
 } elseif (!empty($atts['exclude'])) {
     $attachments = get_children(

@@ -15,8 +15,8 @@ $args = [
     'type' => 'array',
     'mid_size' => 3,
     'end_size' => 1,
-    'next_text' => __('<span uk-pagination-next></span>', 'yootheme'),
-    'prev_text' => __('<span uk-pagination-previous></span>', 'yootheme'),
+    'next_text' => '<span uk-pagination-next></span>',
+    'prev_text' => '<span uk-pagination-previous></span>',
 ];
 
 ?>
@@ -33,10 +33,10 @@ $args = [
 
     <?php if ($config('~theme.blog.navigation') == 'previous/next') : ?>
     <ul class="uk-pagination uk-margin-large">
-        <?php if ($prev = get_previous_posts_link(sprintf(__('%1$s Previous', 'yootheme'), '<span uk-pagination-previous></span>'))) : ?>
+        <?php if ($prev = get_previous_posts_link(strtr(__('&laquo; Previous'), ['&laquo;' => '<span uk-pagination-previous></span>']))) : ?>
         <li><?= $prev ?></li>
         <?php endif ?>
-        <?php if ($next = get_next_posts_link(sprintf(__('Next %1$s', 'yootheme'), '<span uk-pagination-next></span>'))) : ?>
+        <?php if ($next = get_next_posts_link(strtr(__('Next &raquo;'), ['&raquo;' => '<span uk-pagination-next></span>']))) : ?>
         <li class="uk-margin-auto-left"><?= $next ?></li>
         <?php endif ?>
     </ul>
