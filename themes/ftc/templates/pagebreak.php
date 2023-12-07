@@ -3,7 +3,7 @@
     <?php if ($page < $numpages) : ?>
         <div class="uk-text-default">
             <?= str_replace('post-page-numbers', 'post-page-numbers uk-button uk-button-secondary', _wp_link_page($page + 1)) ?>
-            <?= __('Next Page', 'yootheme') ?>
+            <?= __('Next Page') ?>
             </a>
         </div>
     <?php endif ?>

@@ -9,7 +9,7 @@ namespace YOOtheme;
 
 global $multipage, $numpages, $page;
 
-list($config, $view) = app(Config::class, View::class);
+[$config, $view] = app(Config::class, View::class);
 
 if (!is_single()) {
     $config->add('~theme.post', $config('~theme.blog'));
@@ -58,12 +58,14 @@ $image = function ($attr) use ($config, $view) {
     $image = app(ImageProvider::class);
     $meta = get_post_meta(get_post_thumbnail_id());
     $src = Url::relative(set_url_scheme($src, 'relative'));
-    $alt = isset($meta['_wp_attachment_image_alt']) ? $meta['_wp_attachment_image_alt'] : '';
+    $alt = $meta['_wp_attachment_image_alt'] ?? '';
+    $width = $config('~theme.post.image_width');
+    $height = $config('~theme.post.image_height');
 
     if ($view->isImage($src) == 'svg') {
-        $thumbnail = $image->replace($view->image($src, ['width' => $config('~theme.post.image_width'), 'height' => $config('~theme.post.image_height'), 'uk-img' => true, 'property' => 'url', 'alt' => $alt]));
+        $thumbnail = $image->replace($view->image($src, ['width' => $width, 'height' => $height, 'loading' => 'lazy', 'alt' => $alt]));
     } else {
-        $thumbnail = $image->replace($view->image([$src, 'thumbnail' => [$config('~theme.post.image_width'), $config('~theme.post.image_height')], 'srcset' => true], ['uk-img' => true, 'property' => 'url', 'alt' => $alt]));
+        $thumbnail = $image->replace($view->image([$src, 'thumbnail' => [$width, $height], 'srcset' => true], ['loading' => 'lazy', 'alt' => $alt]));
     }
 
     ?>
@@ -84,7 +86,7 @@ $image = function ($attr) use ($config, $view) {
 
 ?>
 
-<article id="post-<?php the_ID() ?>" <?php post_class('uk-article') ?> typeof="Article" vocab="http://schema.org/">
+<article id="post-<?php the_ID() ?>" <?php post_class('uk-article') ?> typeof="Article" vocab="https://schema.org/">
 
     <meta property="name" content="<?= esc_html(get_the_title()) ?>">
     <meta property="author" typeof="Person" content="<?= esc_html(get_the_author()) ?>">
@@ -184,18 +186,12 @@ $image = function ($attr) use ($config, $view) {
         </p>
         <?php endif ?>
 
-        <?php if ($edit = get_edit_post_link()) : ?>
-        <p>
-            <a href="<?= esc_url($edit) ?>"><?= sprintf(__('%1$s Edit', 'yootheme'), '<span uk-icon="pencil"></span>') ?></a>
-        </p>
-        <?php endif ?>
-
         <?php if (is_single() && $config('~theme.post.navigation')) : ?>
         <ul class="uk-pagination uk-margin-medium">
-            <?php if ($prev = get_previous_post_link('%link', sprintf(__('%1$s Previous', 'yootheme'), '<span uk-pagination-previous></span>'))) : ?>
+            <?php if ($prev = get_previous_post_link('%link', strtr(__('&laquo; Previous'), ['&laquo;' => '<span uk-pagination-previous></span>']))) : ?>
             <li><?= $prev ?></li>
             <?php endif ?>
-            <?php if ($next = get_next_post_link('%link', sprintf(__('Next %1$s', 'yootheme'), '<span uk-pagination-next></span>'))) : ?>
+            <?php if ($next = get_next_post_link('%link', strtr(__('Next &raquo;'), ['&raquo;' => '<span uk-pagination-next></span>']))) : ?>
             <li class="uk-margin-auto-left"><?= $next ?></li>
             <?php endif ?>
         </ul>
